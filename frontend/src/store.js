@@ -45,12 +45,14 @@ export const useStore = create((set, get) => ({
   createNode: (type) => {
     const id = getNextID(type);
     const count = get().nodes.length;
+    const isGroup = type === 'group';
     set((state) => ({
       nodes: [...state.nodes, {
         id,
         type,
         position: { x: 250 + (count % 5) * 60, y: 150 + Math.floor(count / 5) * 80 + (count % 3) * 30 },
         data: { id, nodeType: type },
+        ...(isGroup && { style: { width: 380, height: 260 }, zIndex: -1 }),
       }],
     }));
   },
@@ -79,6 +81,16 @@ export const useStore = create((set, get) => ({
       nodes: state.nodes.map((node) =>
         node.id === nodeId
           ? { ...node, data: { ...node.data, [fieldName]: fieldValue } }
+          : node
+      ),
+    }));
+  },
+
+  updateNodeDimensions: (nodeId, width, height) => {
+    set((state) => ({
+      nodes: state.nodes.map((node) =>
+        node.id === nodeId
+          ? { ...node, style: { ...node.style, width, height }, data: { ...node.data, width, height } }
           : node
       ),
     }));

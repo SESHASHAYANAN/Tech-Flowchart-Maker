@@ -13,6 +13,15 @@ import { APINode } from './nodes/apiNode';
 import { FilterNode } from './nodes/filterNode';
 import { MergeNode } from './nodes/mergeNode';
 import { TimerNode } from './nodes/timerNode';
+import { DatabaseNode } from './nodes/databaseNode';
+import { CacheNode } from './nodes/cacheNode';
+import { QueueNode } from './nodes/queueNode';
+import { LoadBalancerNode } from './nodes/loadBalancerNode';
+import { GatewayNode } from './nodes/gatewayNode';
+import { WorkerNode } from './nodes/workerNode';
+import { ServiceNode } from './nodes/serviceNode';
+import { ClientNode } from './nodes/clientNode';
+import { GroupNode } from './nodes/groupNode';
 import 'reactflow/dist/style.css';
 
 const gridSize = 20;
@@ -28,17 +37,31 @@ const nodeTypes = {
   filter: FilterNode,
   merge: MergeNode,
   timer: TimerNode,
+  database: DatabaseNode,
+  cache: CacheNode,
+  queue: QueueNode,
+  loadBalancer: LoadBalancerNode,
+  gateway: GatewayNode,
+  worker: WorkerNode,
+  service: ServiceNode,
+  client: ClientNode,
+  group: GroupNode,
 };
 
 const nodeLabels = {
   customInput: 'Input', llm: 'LLM', customOutput: 'Output', text: 'Text',
   note: 'Note', api: 'API', filter: 'Filter', merge: 'Merge', timer: 'Timer',
+  database: 'DB', cache: 'Cache', queue: 'Queue', loadBalancer: 'LB',
+  gateway: 'GW', worker: 'Worker', service: 'Svc', client: 'Client', group: 'Group',
 };
 
 const minimapColors = {
   customInput: '#22d3ee', customOutput: '#f97316', llm: '#a78bfa',
   text: '#6366f1', note: '#facc15', api: '#34d399',
   filter: '#f472b6', merge: '#60a5fa', timer: '#fb923c',
+  database: '#34d399', cache: '#fb923c', queue: '#f472b6',
+  loadBalancer: '#60a5fa', gateway: '#fbbf24', worker: '#94a3b8',
+  service: '#818cf8', client: '#22d3ee', group: '#475569',
 };
 
 const selector = (state) => ({
@@ -121,7 +144,17 @@ export const PipelineUI = () => {
         y: event.clientY - reactFlowBounds.top,
       });
       const nodeID = getNodeID(type);
-      addNode({ id: nodeID, type, position, data: { id: nodeID, nodeType: type } });
+      const isGroup = type === 'group';
+      addNode({
+        id: nodeID,
+        type,
+        position,
+        data: { id: nodeID, nodeType: type },
+        ...(isGroup && {
+          style: { width: 380, height: 260 },
+          zIndex: -1,
+        }),
+      });
     }
   }, [reactFlowInstance, getNodeID, addNode]); // eslint-disable-line react-hooks/exhaustive-deps
 
