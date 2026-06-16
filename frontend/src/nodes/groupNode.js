@@ -35,8 +35,8 @@ export const GroupNode = ({ id, data, style }) => {
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
-      const hasW = (style?.width && parseFloat(style.width) > 100) || (data?.width && parseFloat(data.width) > 100);
-      const hasH = (style?.height && parseFloat(style.height) > 60) || (data?.height && parseFloat(data.height) > 60);
+      const hasW = (data?.width && parseFloat(data.width) > 100) || (style?.width && parseFloat(style.width) > 100);
+      const hasH = (data?.height && parseFloat(data.height) > 60) || (style?.height && parseFloat(style.height) > 60);
       if (!hasW || !hasH) {
         updateNodeDimensions(id, DEFAULT_W, DEFAULT_H);
       }
@@ -46,8 +46,8 @@ export const GroupNode = ({ id, data, style }) => {
   const theme = GROUP_THEMES[groupType] || GROUP_THEMES.Custom;
   const stopProp = useCallback((e) => e.stopPropagation(), []);
 
-  const w = parseFloat(style?.width) || parseFloat(data?.width) || DEFAULT_W;
-  const h = parseFloat(style?.height) || parseFloat(data?.height) || DEFAULT_H;
+  const w = parseFloat(data?.width) || parseFloat(style?.width) || DEFAULT_W;
+  const h = parseFloat(data?.height) || parseFloat(style?.height) || DEFAULT_H;
 
   const onResizeStart = useCallback((e) => {
     e.stopPropagation();
@@ -90,17 +90,46 @@ export const GroupNode = ({ id, data, style }) => {
         <span className="group-tag" style={{ background: `${theme.border}22`, color: theme.label, borderColor: `${theme.border}44` }}>
           {label}
         </span>
-        <select
-          className="group-type-select nodrag"
-          value={groupType}
-          onChange={(e) => { setGroupType(e.target.value); updateNodeField(id, 'groupType', e.target.value); }}
-          onMouseDown={stopProp}
-          style={{ color: theme.label, borderColor: `${theme.border}33` }}
-        >
-          {Object.keys(GROUP_THEMES).map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {data?.tech && (
+            <div style={{ 
+              display: 'flex', alignItems: 'center', gap: '6px',
+              background: `linear-gradient(135deg, ${theme.border}25, ${theme.border}10)`, 
+              color: '#f8fafc', 
+              border: `1px solid ${theme.border}40`, 
+              padding: '3px 10px', 
+              borderRadius: '20px', 
+              fontSize: '11px', 
+              fontWeight: 700,
+              fontFamily: 'var(--font)',
+              boxShadow: `0 2px 10px ${theme.border}25`,
+              backdropFilter: 'blur(8px)'
+            }}>
+              <span style={{ fontSize: '12px' }}>{
+                data.tech.includes('React') ? '⚛️' : 
+                data.tech.includes('Python') ? '🐍' : 
+                data.tech.includes('Node') ? '🟩' : 
+                data.tech.includes('Java') ? '☕' : 
+                data.tech.includes('Go') ? '🐹' : 
+                data.tech.includes('Next') ? '▲' : 
+                data.tech.includes('Tailwind') ? '🌊' : 
+                data.tech.includes('HTML') ? '📄' : '✨'
+              }</span>
+              {data.tech}
+            </div>
+          )}
+          <select
+            className="group-type-select nodrag"
+            value={groupType}
+            onChange={(e) => { setGroupType(e.target.value); updateNodeField(id, 'groupType', e.target.value); }}
+            onMouseDown={stopProp}
+            style={{ color: theme.label, borderColor: `${theme.border}33` }}
+          >
+            {Object.keys(GROUP_THEMES).map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
       </div>
       <div className="group-body" />
       {/* nodrag + nopan ensures React Flow does not intercept mouse events */}

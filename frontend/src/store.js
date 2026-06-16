@@ -35,6 +35,10 @@ export const useStore = create((set, get) => ({
   nodes: [],
   edges: [],
   savedVersions: readSaves(),
+  aiPanelOpen: false,
+
+  toggleAIPanel: () => set((s) => ({ aiPanelOpen: !s.aiPanelOpen })),
+  setAIPanelOpen: (open) => set({ aiPanelOpen: open }),
 
   getNodeID: (type) => getNextID(type),
 
